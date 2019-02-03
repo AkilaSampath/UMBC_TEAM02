@@ -65,6 +65,9 @@ main(int argc, char** argv) {
         a = atof(argv[1]);
         b = atof(argv[2]);
         n = atoi(argv[3]);
+        printf("a is now %f", a);
+        printf("b is now %f", b);
+        printf("n is now %d", n);
     }
     /* Otherwise we will use the standard arguments*/
 
