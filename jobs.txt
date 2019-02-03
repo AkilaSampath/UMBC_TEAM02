@@ -2,7 +2,7 @@ Problem 1
 [ ] a: Akila
 [ ] b: Akila
 [ ] c: Steve
-[ ] d: Mengxi
+[ ] d: Mengxi (Wait on c)
 [ ] e: Mengxi
 
 After the above
