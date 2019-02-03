@@ -113,6 +113,15 @@ main(int argc, char** argv) {
             n);
         printf("of the integral from %f to %f = %f\n",
             a, b, total);
+        /*Other things to print:
+         * True Value
+         * True Error
+         * h^2
+         * h
+         * n - number of intervals
+         * p - number of processes */
+
+        printf("True Value:           %f\n", 1.0/3.0);
     }
 
     /* Shut down MPI */
