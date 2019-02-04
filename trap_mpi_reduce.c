@@ -72,7 +72,7 @@ main(int argc, char** argv) {
         }
 //mengxi
         if(n<=0) {
-        printf("Error: n <= 0.");
+        printf("Error: n <= 0 or n is not a number.\n");
         MPI_Abort(MPI_COMM_WORLD,1); /* Here I prescribe error code 1 for inputs. */
         }
     }
@@ -128,9 +128,9 @@ main(int argc, char** argv) {
     /* Print the result */
 
      if (my_rank == 0) {
-        printf("With n = %d trapezoids, our estimate\n",
+        printf("With n = %d trapezoids, our estimate of the integral\n",
             n);
-        printf("of the integral from %f to %f = %f\n",
+        printf("from %f to %f = %f\n",
             a, b, total);
         /*Other things to print:
          * True Value
@@ -140,7 +140,7 @@ main(int argc, char** argv) {
          * n - number of intervals
          * p - number of processes */
 
-        printf("True Value:           %f\n", (pow(b,3)-pow(a,3))/3.0);
+        printf("True Value:                 %f\n", (pow(b,3)-pow(a,3))/3.0);
     }
     /* Shut down MPI */
     MPI_Finalize();
