@@ -1,0 +1,10 @@
+Problem 1
+[ ] a: Akila
+[ ] b: Akila
+[X] c: Steve
+[ ] d: Mengxi (Wait on c)
+[X] e: Mengxi
+
+After the above
+[ ] f: Together
+[ ] g: Suhail
