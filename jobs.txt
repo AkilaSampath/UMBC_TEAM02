@@ -3,7 +3,7 @@ Problem 1
 [ ] b: Akila
 [X] c: Steve
 [ ] d: Mengxi (Wait on c)
-[ ] e: Mengxi
+[X] e: Mengxi
 
 After the above
 [ ] f: Together
