@@ -1,7 +1,7 @@
 Problem 1
 [ ] a: Akila
 [ ] b: Akila
-[ ] c: Steve
+[X] c: Steve
 [ ] d: Mengxi (Wait on c)
 [ ] e: Mengxi
 

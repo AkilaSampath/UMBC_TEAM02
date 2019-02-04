@@ -25,6 +25,10 @@
 /* We'll be using MPI routines, definitions, etc. */
 #include "mpi.h"
 
+/* Define bool type */
+typedef int bool;
+enum { false, true };
+
 
 main(int argc, char** argv) {
     int         my_rank;   /* My process rank           */
@@ -47,6 +51,9 @@ main(int argc, char** argv) {
     int         tag = 0;
     MPI_Status  status;
 
+    /* Change to False for main runs, True will give more information. */
+    bool verbose = false; 
+
     float Trap(float local_a, float local_b, int local_n,
               float h);    /* Calculate local integral  */
 
@@ -62,14 +69,21 @@ main(int argc, char** argv) {
     /*Process command line arguments */
     if(argc>1)
     {
+        if(verbose) printf("Command Line Arguments:\n");
         a = atof(argv[1]);
         b = atof(argv[2]);
         n = atoi(argv[3]);
-        printf("a is now %f", a);
-        printf("b is now %f", b);
-        printf("n is now %d", n);
     }
-    /* Otherwise we will use the standard arguments*/
+    else /* Otherwise we will use the standard arguments*/
+    {
+        if(verbose) printf("Default Arguments:\n");
+    }
+    if(verbose)
+    {
+        printf("a is %5.3f\n", a);
+        printf("b is %5.3f\n", b);
+        printf("n is %d\n", n);
+    }
 
     h = (b-a)/n;    /* h is the same for all processes */
     local_n = n/p;  /* So is the number of trapezoids */
