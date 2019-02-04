@@ -38,7 +38,7 @@ main(int argc, char** argv) {
     int         local_n;   /* Number of trapezoids for  */
                            /* my calculation            */
 //mengxi
-    int         residual   /* to be described           */
+    int         residual;   /* to be described           */
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
