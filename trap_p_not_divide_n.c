@@ -38,7 +38,7 @@ main(int argc, char** argv) {
     int         local_n;   /* Number of trapezoids for  */
                            /* my calculation            */
 //mengxi
-    int         residual   /* to be described           */
+    int         residual;  /* to be described           */
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
@@ -70,17 +70,21 @@ main(int argc, char** argv) {
      * integration = local_n*h.  So my interval
      * starts at: */
     local_a = a + my_rank*local_n*h;
-    local_b = local_a + local_n*h;
 //mengxi
     if (my_rank < residual) {
         local_a += my_rank*h;
-        local_b += (my_rank+1)*h;
+        local_b = local_a + (local_n+1)*h;
     } else {
         local_a += residual*h;
-        local_b += residual*h;
+        local_b = local_a + local_n*h;
     }
 //mengxi
     integral = Trap(local_a, local_b, local_n, h);
+
+//mengxi
+    printf("local_a=%f local_b=%f from process %d\n",\
+           local_a,local_b,my_rank);
+//mengxi
 
     /* Add up the integrals calculated by each process */
     if (my_rank == 0) {
@@ -94,7 +98,6 @@ main(int argc, char** argv) {
         MPI_Send(&integral, 1, MPI_FLOAT, dest,
             tag, MPI_COMM_WORLD);
     }
-
     /* Print the result */
     if (my_rank == 0) {
         printf("With n = %d trapezoids, our estimate\n",
@@ -102,7 +105,6 @@ main(int argc, char** argv) {
         printf("of the integral from %f to %f = %f\n",
             a, b, total);
     }
-
     /* Shut down MPI */
     MPI_Finalize();
 } /*  main  */
