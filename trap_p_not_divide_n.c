@@ -84,18 +84,18 @@ main(int argc, char** argv) {
     local_a = a + my_rank*local_n*h;
 //mengxi
     if (my_rank < residual) {
+        local_n ++;
         local_a += my_rank*h;
-        local_b = local_a + (local_n+1)*h;
     } else {
         local_a += residual*h;
-        local_b = local_a + local_n*h;
     }
+    local_b = local_a + local_n*h;
 //mengxi
     integral = Trap(local_a, local_b, local_n, h);
 
 //mengxi
-    printf("local_a=%f local_b=%f from process %d\n",\
-           local_a,local_b,my_rank);
+    printf("Process %d: %d subintervals from %f to %f\n",\
+           my_rank,local_n,local_a,local_b);
 //mengxi
 
     /* Add up the integrals calculated by each process */
