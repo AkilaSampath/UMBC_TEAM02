@@ -38,7 +38,11 @@ main(int argc, char** argv) {
     int         local_n;   /* Number of trapezoids for  */
                            /* my calculation            */
 //mengxi
+<<<<<<< HEAD
     int         residual;  /* to be described           */
+=======
+    int         residual;   /* to be described           */
+>>>>>>> 53faa7f1a772b8fd593566df2c4c8dc31eff963e
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
@@ -58,6 +62,18 @@ main(int argc, char** argv) {
 
     /* Find out how many processes are being used */
     MPI_Comm_size(MPI_COMM_WORLD, &p);
+
+    /*Process command line arguments */
+    if(argc>1)
+    {
+        a = atof(argv[1]);
+        b = atof(argv[2]);
+        n = atoi(argv[3]);
+        printf("a is now %f", a);
+        printf("b is now %f", b);
+        printf("n is now %d", n);
+    }
+    /* Otherwise we will use the standard arguments*/
 
     h = (b-a)/n;    /* h is the same for all processes */
     local_n = n/p;  /* So is the number of trapezoids */
@@ -104,6 +120,15 @@ main(int argc, char** argv) {
             n);
         printf("of the integral from %f to %f = %f\n",
             a, b, total);
+        /*Other things to print:
+         * True Value
+         * True Error
+         * h^2
+         * h
+         * n - number of intervals
+         * p - number of processes */
+
+        printf("True Value:           %f\n", 1.0/3.0);
     }
     /* Shut down MPI */
     MPI_Finalize();
