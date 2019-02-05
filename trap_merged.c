@@ -44,6 +44,7 @@ main(int argc, char** argv) {
     int         residual;  /* to be described           */
     bool        if_sin = false;
     float       true_value;
+    bool        set_fun = false;
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
@@ -73,15 +74,29 @@ main(int argc, char** argv) {
 
     /*Process command line arguments */
     if(my_rank==0) {
-        if((argc==2 || argc==5) && argv[1][0]=='s') { /* Use pi*sin(pi*x) */
-        if_sin = true;
+        if(argc>1 && ((argv[1][0]>='a' && argv[1][0]<='z') || 
+           (argv[1][0]>='A' && argv[1][0]<='Z'))) {
+            set_fun = true;
+            if(argv[1][0]=='s' || argv[1][0]=='S') { /* Use pi*sin(pi*x) */
+                if_sin = true;
+            }
         }
-        if(argc>3)
+        if(argc>1+set_fun)
         {
             if(verbose) printf("Command Line Arguments:\n");
-            a = atof(argv[argc-3]);
-            b = atof(argv[argc-2]);
-            n = atoi(argv[argc-1]);
+            switch(argc-set_fun) {
+                case 2:
+                    n = atoi(argv[set_fun+1]);
+                    break;
+                case 3:
+                    a = atof(argv[set_fun+1]);
+                    b = atof(argv[set_fun+2]);
+                    break;
+                default:
+                    a = atof(argv[set_fun+1]);
+                    b = atof(argv[set_fun+2]);
+                    n = atoi(argv[set_fun+3]);
+            }
         }
         else /* Otherwise we will use the standard arguments */
         {
@@ -171,13 +186,20 @@ main(int argc, char** argv) {
          * h
          * n - number of intervals
          * p - number of processes */
-        if(if_sin) {
-            true_value = cos(M_PI*a)-cos(M_PI*b);
+        if(verbose) {
+            if(if_sin) {
+                true_value = cos(M_PI*a)-cos(M_PI*b);
+            }
+            else {
+                true_value = (pow(b,3)-pow(a,3))/3.0;
+            }
+            printf("True Value: %5.3f\n", true_value);
+            printf("True Error: %5.3f\n", total - true_value);
+            printf("h^2 = %5.3f\n", pow(h,2));
+            printf("h = %5.3f\n", h);
+            printf("n = %d\n", n);
+            printf("p = %d\n", p);
         }
-        else {
-            true_value = (pow(b,3)-pow(a,3))/3.0;
-        }
-        printf("True Value: %5.3f\n", true_value);
     }
     /* Shut down MPI */
     MPI_Finalize();
