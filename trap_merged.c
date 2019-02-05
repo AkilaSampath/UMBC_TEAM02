@@ -22,7 +22,6 @@
  */
 #include <stdio.h>
 #include <math.h>
-
 /* We'll be using MPI routines, definitions, etc. */
 #include "mpi.h"
 
@@ -43,6 +42,8 @@ main(int argc, char** argv) {
                            /* my calculation            */
 //mengxi
     int         residual;  /* to be described           */
+    bool        if_sin = false;
+    float       true_value;
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
@@ -52,10 +53,10 @@ main(int argc, char** argv) {
     MPI_Status  status;
 
     /* Change to False for main runs, True will give more information. */
-    bool verbose = false; 
+    bool verbose = true;
 
     float Trap(float local_a, float local_b, int local_n,
-              float h);    /* Calculate local integral  */
+              float h, bool if_sin);    /* Calculate local integral  */
 
     /* Let the system do what it needs to start up MPI */
     MPI_Init(&argc, &argv);
@@ -66,16 +67,23 @@ main(int argc, char** argv) {
     /* Find out how many processes are being used */
     MPI_Comm_size(MPI_COMM_WORLD, &p);
 
+    int        global_n[p];
+    float      global_a[p];
+    float      global_b[p];
+
     /*Process command line arguments */
     if(my_rank==0) {
-        if(argc>1)
+        if((argc==2 || argc==5) && argv[1][0]=='s') { /* Use pi*sin(pi*x) */
+        if_sin = true;
+        }
+        if(argc>3)
         {
             if(verbose) printf("Command Line Arguments:\n");
-            a = atof(argv[1]);
-            b = atof(argv[2]);
-            n = atoi(argv[3]);
+            a = atof(argv[argc-3]);
+            b = atof(argv[argc-2]);
+            n = atoi(argv[argc-1]);
         }
-        else /* Otherwise we will use the standard arguments*/
+        else /* Otherwise we will use the standard arguments */
         {
             if(verbose) printf("Default Arguments:\n");
         }
@@ -86,6 +94,7 @@ main(int argc, char** argv) {
             printf("b is %5.3f\n", b);
             printf("n is %d\n", n);
         }
+//mengxi
         if(n<=0) {
         printf("Error: n <= 0 or n is not a number.\n");
         MPI_Abort(MPI_COMM_WORLD,1); /* Here I prescribe error code 1 for inputs. */
@@ -95,7 +104,9 @@ main(int argc, char** argv) {
     MPI_Bcast(&a,1,MPI_FLOAT,0,MPI_COMM_WORLD);
     MPI_Bcast(&b,1,MPI_FLOAT,0,MPI_COMM_WORLD);
     MPI_Bcast(&n,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&if_sin,1,MPI_INT,0,MPI_COMM_WORLD);
 //mengxi
+    /* Otherwise we will use the standard arguments*/
 
     h = (b-a)/n;    /* h is the same for all processes */
     local_n = n/p;  /* So is the number of trapezoids */
@@ -117,11 +128,20 @@ main(int argc, char** argv) {
     }
     local_b = local_a + local_n*h;
 //mengxi
-    integral = Trap(local_a, local_b, local_n, h);
+    integral = Trap(local_a, local_b, local_n, h, if_sin);
 
 //mengxi
-    printf("Process %d: %d subintervals from %f to %f\n",\
-           my_rank,local_n,local_a,local_b);
+    if(verbose) {
+        MPI_Gather(&local_n,1,MPI_INT,global_n,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Gather(&local_a,1,MPI_FLOAT,global_a,1,MPI_FLOAT,0,MPI_COMM_WORLD);
+        MPI_Gather(&local_b,1,MPI_FLOAT,global_b,1,MPI_FLOAT,0,MPI_COMM_WORLD);
+        if(my_rank == 0) {
+            for(source = 0; source < p; source++) {
+                printf("Process %d: %d subintervals from %f to %f\n",
+                       source,global_n[source],global_a[source],global_b[source]);
+            }
+        }
+    }
 //mengxi
 
     /* Add up the integrals calculated by each process */
@@ -141,9 +161,9 @@ main(int argc, char** argv) {
     MPI_Reduce(&integral,&total,1,MPI_FLOAT,MPI_SUM,0,MPI_COMM_WORLD);
     /* Print the result */
 
-     if (my_rank == 0) {
+    if (my_rank == 0) {
         printf("With n = %d trapezoids, our estimate of the integral\n", n);
-        printf("from %f to %f = %f\n", a, b, total);
+        printf("from %5.3f to %5.3f = %5.3f\n", a, b, total);
         /*Other things to print:
          * True Value
          * True Error
@@ -151,8 +171,13 @@ main(int argc, char** argv) {
          * h
          * n - number of intervals
          * p - number of processes */
-
-        printf("True Value:                 %f\n", (pow(b,3)-pow(a,3))/3.0);
+        if(if_sin) {
+            true_value = cos(M_PI*a)-cos(M_PI*b);
+        }
+        else {
+            true_value = (pow(b,3)-pow(a,3))/3.0;
+        }
+        printf("True Value: %5.3f\n", true_value);
     }
     /* Shut down MPI */
     MPI_Finalize();
@@ -163,26 +188,29 @@ float Trap(
           float  local_a   /* in */,
           float  local_b   /* in */,
           int    local_n   /* in */,
-          float  h         /* in */) {
+          float  h         /* in */,
+          bool   if_sin) {
 
     float integral;   /* Store result in integral  */
     float x;
     int i;
 
-    float f(float x); /* function we're integrating */
+    float x_square(float x); /* function we're integrating */
+    float pi_sin_pi_x(float x);
 
-    integral = (f(local_a) + f(local_b))/2.0;
-    x = local_a;
+    float (*f[])(float) = {x_square, pi_sin_pi_x};
+
+    x=local_a;
+    integral = ((*f[if_sin])(local_a) + (*f[if_sin])(local_b))/2.0;
     for (i = 1; i <= local_n-1; i++) {
         x = x + h;
-        integral = integral + f(x);
-    }
+        integral = integral + (*f[if_sin])(x); }
     integral = integral*h;
     return integral;
 } /*  Trap  */
 
 
-float f(float x) {
+float x_square(float x) {
     float return_val;
     /* Calculate f(x). */
     /* Store calculation in return_val. */
@@ -190,4 +218,10 @@ float f(float x) {
     return return_val;
 } /* f */
 
-
+float pi_sin_pi_x(float x) {
+    float return_val;
+    /* Calculate f(x). */
+    /* Store calculation in return_val. */
+    return_val = M_PI*sin(M_PI*x);
+    return return_val;
+} /* f */
