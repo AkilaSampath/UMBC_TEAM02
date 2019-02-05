@@ -45,6 +45,7 @@ main(int argc, char** argv) {
     bool        if_sin = false;
     float       true_value;
     bool        set_fun = false;
+    double      startTime, endTime, tsec;
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
@@ -61,6 +62,9 @@ main(int argc, char** argv) {
 
     /* Let the system do what it needs to start up MPI */
     MPI_Init(&argc, &argv);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    startTime = MPI_Wtime();
 
     /* Get my process rank */
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -201,6 +205,14 @@ main(int argc, char** argv) {
             printf("p = %d\n", p);
         }
     }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    endTime = MPI_Wtime();
+    if (my_rank == 0) {
+        tsec = endTime - startTime;
+        printf("Observed wall clock time in seconds = %11.4e\n",tsec);
+    }
+
     /* Shut down MPI */
     MPI_Finalize();
 } /*  main  */
