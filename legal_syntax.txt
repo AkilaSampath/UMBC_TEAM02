@@ -1,0 +1,10 @@
+./trap
+./trap (char)fun
+./trap (int)n
+./trap (char)fun (int)n
+./trap (float)a (float)b
+./trap (char)fun (float)a (float)b
+./trap (float)a (float)b (int)n
+./trap (char)fun (float)a (float)b (int)n
+
+The character (or string) "fun" prescribes the function. It must start with a letter (case insensitive). If it starts with 's' or 'S', then the sine function is used. Otherwise, the default function is used.
