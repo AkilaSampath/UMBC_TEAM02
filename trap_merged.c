@@ -46,6 +46,7 @@ main(int argc, char** argv) {
     float       true_value;
     bool        set_fun = false;
     double      startTime, endTime, tsec;
+    float       err;
 //mengxi
     float       integral;  /* Integral over my interval */
     float       total;     /* Total integral            */
@@ -156,7 +157,7 @@ main(int argc, char** argv) {
         MPI_Gather(&local_b,1,MPI_FLOAT,global_b,1,MPI_FLOAT,0,MPI_COMM_WORLD);
         if(my_rank == 0) {
             for(source = 0; source < p; source++) {
-                printf("Process %d: %d subintervals from %f to %f\n",
+                printf("Process %d: %d subintervals from %5.3f to %5.3f\n",
                        source,global_n[source],global_a[source],global_b[source]);
             }
         }
@@ -182,7 +183,7 @@ main(int argc, char** argv) {
 
     if (my_rank == 0) {
         printf("With n = %d trapezoids, our estimate of the integral\n", n);
-        printf("from %5.3f to %5.3f = %5.3f\n", a, b, total);
+        printf("from %5.3f to %5.3f = %12.8e\n", a, b, total);
         /*Other things to print:
          * True Value
          * True Error
@@ -197,10 +198,12 @@ main(int argc, char** argv) {
             else {
                 true_value = (pow(b,3)-pow(a,3))/3.0;
             }
-            printf("True Value: %5.3f\n", true_value);
-            printf("True Error: %5.3f\n", total - true_value);
-            printf("h^2 = %5.3f\n", pow(h,2));
-            printf("h = %5.3f\n", h);
+            err=fabs(total - true_value);
+            printf("True Value: %12.8e\n", true_value);
+            printf("True Error: %12.8e\n", err);
+            printf("h^2 = %12.8e\n", h*h);
+            printf("C = err/h^2 = %12.8e\n",err/h/h);
+            printf("h = %12.8e\n", h);
             printf("n = %d\n", n);
             printf("p = %d\n", p);
         }
