@@ -167,7 +167,7 @@ main(int argc, char** argv) {
         MPI_Gather(&local_b,1,MPI_DOUBLE,global_b,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
         if(my_rank == 0) {
             for(source = 0; source < p; source++) {
-                printf("Process %d: %d subintervals from %5.3lf to %5.3lf\n",
+                printf("Process %d: %d subintervals from %24.16lf to %24.16lf\n",
                        source,global_n[source],global_a[source],global_b[source]);
             }
         }
