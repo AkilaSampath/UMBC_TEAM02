@@ -9,8 +9,8 @@ To remove the nodes
 python makeDirs.py -r
 """
 
-nVals    = [1, 2, 4, 8, 16, 32]
-ppnVals  = [1, 2, 4, 6, 8]
+nVals    = [1, 2, 4, 8, 16, 24]
+ppnVals  = [1, 2, 4, 6, 8, 16]
 trapPows = [19]
 trapVals = [2**t for t in trapPows] #Unused
 
