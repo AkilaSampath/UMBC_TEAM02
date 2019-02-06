@@ -49,3 +49,5 @@ for n in nVals:
                     outfile.write("srun ../trap " + function + " 0.0 1.0 " + str(2**trap) + "\n")
 
                     outfile.close()
+
+                    
