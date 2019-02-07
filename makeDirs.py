@@ -27,6 +27,7 @@ if(len(sys.argv) > 1):
     if(sys.argv[1] == "-r"):
         print "Removing folders this run:"
         remove = True
+        submit = False
 
 if(submit):
     print "About to submit", str(runNum), "jobs to the server. Are you sure?"
