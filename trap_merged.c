@@ -66,7 +66,7 @@ main(int argc, char** argv) {
     MPI_Status  status;
 
     /* Change to False for main runs, True will give more information. */
-    bool verbose = true;
+    bool verbose = false;
 
     double Trap(double local_a, double local_b, int local_n,
                 double h, bool if_sin);    /* Calculate local integral  */
