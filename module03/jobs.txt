@@ -1,0 +1,23 @@
+Preliminary list from Friday meeting:
+
+Report:
+[ ] Make new Overleaf report (keep old copy)
+[ ] Write up problem statement in report
+[ ] Describe solution method
+[ ] Figure out citations
+
+Program:
+[ ] Serial version
+  [ ] Download available code
+  [ ] Add, commit, push to github
+  [ ] Create or copy makefile
+  [ ] step 1
+  [ ] step 2
+  [ ] step ...
+
+[ ] Parallel version
+  [ ] 
+  [ ] 
+  [ ] 
+
+
