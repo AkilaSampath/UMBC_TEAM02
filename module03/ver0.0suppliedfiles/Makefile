@@ -1,4 +1,4 @@
-OBJS := main.o memory.o Ax.o # cg.o
+OBJS := main.o memory.o Ax.o cg.o utilities.o
 
 EXECUTABLE := poisson
 
