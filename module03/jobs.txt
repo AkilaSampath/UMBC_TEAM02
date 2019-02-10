@@ -8,8 +8,8 @@ Report:
 
 Program:
 [ ] Serial version
-  [ ] Download available code
-  [ ] Add, commit, push to github
+  [X] Download available code
+  [X] Add, commit, push to github
   [ ] Create or copy makefile
   [ ] step 1
   [ ] step 2
