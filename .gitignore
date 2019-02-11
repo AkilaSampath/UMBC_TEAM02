@@ -5,3 +5,5 @@
 *.o
 */poisson
 ./module03/ver0.0suppliedfiles/poisson
+module03/ver0.0suppliedfiles/poisson
+module03/ver0.0suppliedfiles/*.o
