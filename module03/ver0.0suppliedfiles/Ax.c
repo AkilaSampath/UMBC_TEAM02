@@ -8,13 +8,8 @@ void Ax(double *l_v, double *l_u, long l_n, long l_N, long N,
   /*long i, l_j;*/
   long l_j;
   double tmp;
-<<<<<<< HEAD
   MPI_Status statuses[4];
   MPI_Request requests[4];
-=======
-
-  MPI_Status status;
->>>>>>> 55e1d9e7e6b2ac89ac7cba09b475533ebc8ecbcf
 
   /* code needed here */
   if(np>1) {
@@ -24,7 +19,6 @@ void Ax(double *l_v, double *l_u, long l_n, long l_N, long N,
     MPI_Isend(l_u,          N,MPI_DOUBLE,idleft, 2,MPI_COMM_WORLD,requests+3);
   }
 
-<<<<<<< HEAD
   for(l_j=1;l_j<l_N-1;l_j++) {
     for(i=0;i<N;i++) {
       tmp = 4.0*l_u[i+N*l_j] - l_u[i+N*(l_j-1)] - l_u[i+N*(l_j+1)];
@@ -68,17 +62,4 @@ void Ax(double *l_v, double *l_u, long l_n, long l_N, long N,
     }
   }
 //  printf("Process %d: %x %2.0lf %x %2.0lf\n",id,l_v,l_v[0],l_v+l_n-1,l_v[l_n-1]);
-=======
-  long i, j;
-  for(j = 0; j<N; j++){
-    for(i = 0; i<N; i++) {
-      tmp = 4.0*l_u[i+N*(j-1)];
-      if(j>0  ) tmp = tmp - l_u[i     + N*(j - 1)];
-      if(i>0  ) tmp = tmp - l_u[i - 1 + N*(j    )];
-      if(i<N-1) tmp = tmp - l_u[i + 1 + N*(j    )];
-      if(j<N-1) tmp = tmp - l_u[i     + N*(j + 1)];
-      l_v[i+N*j] = tmp;
-    }
-  }
->>>>>>> 55e1d9e7e6b2ac89ac7cba09b475533ebc8ecbcf
 }
