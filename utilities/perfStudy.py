@@ -21,10 +21,10 @@ mandates using the singleton option for the script.
 #Non command line arguments
 nVals    = [1, 2, 4, 8, 16]
 ppnVals  = [1, 2, 4, 6, 8, 16]
-trapPows = [19]
-functions = ["xx", "sine"]
+arg1Vals = [19]
+arg2Vals = ["xx", "sine"]
 
-runNum = len(nVals)*len(ppnVals)*len(trapPows)*len(functions)
+runNum = len(nVals)*len(ppnVals)*len(arg1Vals)*len(arg2Vals)
 
 #Command line arguments
 submit = False
@@ -62,11 +62,11 @@ singleton = False or submit
 
 for n in nVals:
     for ppn in ppnVals:
-        for trap in trapPows:
-            for function in functions:
+        for arg1 in arg1Vals:
+            for arg2 in arg2Vals:
 
                 #Create directory name
-                dirName = "".join([str(s) for s in ["n", n, "ppn", ppn, "tr", trap, function]])
+                dirName = "".join([str(s) for s in ["n", n, "ppn", ppn, "a", arg1, "b", arg2]])
 
                 #Remove directory
                 if(0 == sub.call(["test", "-e", dirName])):
@@ -82,7 +82,7 @@ for n in nVals:
                     sub.call(["mkdir", dirName])
                     
                     #Write slurm file
-                    outfile = open("/".join([dirName, "trap.slurm"]),"w")
+                    outfile = open("/".join([dirName, program_name + ".slurm"]),"w")
 
                     if(submit): #Will be run from *this* folder: ./
                         #Boilerplate
@@ -103,10 +103,10 @@ for n in nVals:
                         outfile.write("#SBATCH --dependency=singleton" +                     "\n")
 
                         outfile.write("\n")
-                        outfile.write("srun ./trap " + function + " 0.0 1.0 " + str(2**trap) + "\n")
+                        outfile.write("srun ./" + program_name + " " + arg1 + " "+ arg2 + "\n")
                         outfile.close()
 
-                        sub.call(["sbatch", "/".join([dirName,"trap.slurm"])])
+                        sub.call(["sbatch", "/".join([dirName,program_name + ".slurm"])])
 
                     else: #Meant to be run from within the folder: ./dirName/
                         #Boilerplate
@@ -125,5 +125,5 @@ for n in nVals:
                         if(singleton):
                             outfile.write("#SBATCH --dependency=singleton" +                     "\n")
                         outfile.write("\n")
-                        outfile.write("srun ../trap " + function + " 0.0 1.0 " + str(2**trap) + "\n")
+                        outfile.write("srun ../" + " ".join([str(s) for s in [program_name, arg1, arg2]]) + "\n")
                         outfile.close()
