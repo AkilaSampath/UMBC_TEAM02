@@ -156,10 +156,9 @@ int main (int argc, char *argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   start = MPI_Wtime();  /* start time */
 
-/* commented out, until utilty functions parallel_dot() and Ax() exist:
+// commented out, until utilty functions parallel_dot() and Ax() exist:
   cg(l_u, &flag, &relres, &iter, l_r, tol, maxit,
      l_p, l_q, l_n, l_N, N, id, idleft, idright, np, comm, gl, gr);
-*/
 
   MPI_Barrier(MPI_COMM_WORLD);
   end = MPI_Wtime();  /* end time */
