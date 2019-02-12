@@ -1,4 +1,5 @@
 #include "main.h"
+#include <math.h>
 
 #define SQ(X) ((X)*(X))
 
@@ -14,7 +15,7 @@ int main (int argc, char *argv[]) {
   long l_ia, l_ib;
   long l_Ntmp, l_ntmp;
   double *l_u, *l_r, *l_p, *l_q;
-  double *x, *y;
+  double *x, *y,tmp;
   double *gl, *gr;
   double h, tol, relres;
   double enorminf, l_enorminf, err_ij;
@@ -163,7 +164,23 @@ int main (int argc, char *argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   end = MPI_Wtime();  /* end time */
 
-  if (id == 0) {
+  double uerror[l_n],xtrue[l_N],ytrue[N];
+  tmp=0;
+  for(i=0;i<N;i++)
+    ytrue[i]=h*(i+1);
+  for(j=0;j<l_N;j++)
+    xtrue[j]=h*(j+l_ia+1);
+  for(i=0;i<N;i++) {
+    for(j=0;j<l_N;j++)
+      uerror[i+j*N]=fabs(l_u[i+j*N]-SQ(sin(M_PI*xtrue[j]))*SQ(sin(M_PI*ytrue[i])));
+  }
+  for(i=0;i<N*l_N;i++)  {
+    if(tmp<uerror[i])
+      tmp=uerror[i];
+  }
+  MPI_Reduce(&tmp,&enorminf,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
+
+  if(id == 0) {
     printf("flag = %1d, iter = %d\n", flag, iter);
     printf("relres             = %24.16e\n", relres);
     printf("h                  = %24.16e\n", h);
@@ -175,6 +192,12 @@ int main (int argc, char *argv[]) {
   }
 
   MPI_Finalize();
+
+/*  if(np==1 && id==0) {
+    for(i=0;i<N*N;i++)
+      printf("%lf %lf\n",l_u[i],uerror[i]);
+    printf("%lf\n",tmp);
+  } */
 
   free_vector(l_q);
   free_vector(l_r);
