@@ -80,7 +80,7 @@ int main (int argc, char *argv[]) {
   }
 
   /* test output: */
-  if (np <= 8) { /* for more than np=8 this becomes unreadable */
+/*  if (np <= 8) { // for more than np=8 this becomes unreadable
     sprintf(message, "P%03d: l_n=%12ld; l_N=%6ld from l_ia=%6ld to l_ib=%6ld",
                      id, l_n, l_N, l_ia, l_ib);
     if (id == 0) {
@@ -98,7 +98,7 @@ int main (int argc, char *argv[]) {
   if (id == 0) {
     printf("N = %6ld, tol = %10.1g, maxit = %d\n", N, tol, maxit);
     printf("n = %12ld, l_N = %6ld, l_n = %12ld\n", n, l_N, l_n);
-  }
+  } */
 
   l_u = allocate_double_vector(l_n);  /* initial guess */
   l_r = allocate_double_vector(l_n); /* right-hand side in, residual out */
@@ -164,7 +164,7 @@ int main (int argc, char *argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   end = MPI_Wtime();  /* end time */
 
-  double uerror[l_n],xtrue[l_N],ytrue[N];
+/*  double uerror[l_n],xtrue[l_N],ytrue[N];
   tmp=0;
   for(i=0;i<N;i++)
     ytrue[i]=h*(i+1);
@@ -178,15 +178,15 @@ int main (int argc, char *argv[]) {
     if(tmp<uerror[i])
       tmp=uerror[i];
   }
-  MPI_Reduce(&tmp,&enorminf,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
+  MPI_Reduce(&tmp,&enorminf,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD); */
 
   if(id == 0) {
     printf("flag = %1d, iter = %d\n", flag, iter);
     printf("relres             = %24.16e\n", relres);
-    printf("h                  = %24.16e\n", h);
-    printf("h^2                = %24.16e\n", h*h);
-    printf("enorminf           = %24.16e\n", enorminf);
-    printf("C = enorminf / h^2 = %24.16e\n", (enorminf/(h*h)));
+//    printf("h                  = %24.16e\n", h);
+//    printf("h^2                = %24.16e\n", h*h);
+//    printf("enorminf           = %24.16e\n", enorminf);
+//    printf("C = enorminf / h^2 = %24.16e\n", (enorminf/(h*h)));
     printf("wall clock time    = %10.2f seconds\n", end-start);
     fflush(stdout);
   }
