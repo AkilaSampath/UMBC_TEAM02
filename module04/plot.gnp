@@ -1,0 +1,22 @@
+#Allow for Greek letters
+set termoption enhanced
+
+#Titles
+set title "Blackbody Radiation"
+set xlabel "Wavelength [{/Symbol m} meters]"
+set ylabel "Radiance [Wm^{-2}sr^{-1} {/Symbol m} m^{-1}]"
+
+#Scaling
+set xrange [0.1:100]
+set logscale x
+
+##Plot for User
+#plot "earth.dat" w l title "Earth", "sun.dat"   w l title "Sun"
+#pause -1
+
+#Save file
+set terminal pngcairo enhanced size 800,600 enhanced font 'Verdana,10'
+set output "Radiation.png"
+plot "earth.dat" w l title "Earth", "sun.dat"   w l title "Sun"
+replot
+
