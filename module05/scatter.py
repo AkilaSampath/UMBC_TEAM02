@@ -172,7 +172,7 @@ if (__name__ == "__main__"):
 
     #Friendly output either way
     if(return_array):
-        for i in range(n_total+1):
+        for i in range(n_total):
             print(" ".join([str(s) for s in [i, n_ref[i], n_abs[i], n_tra[i], max_depths[i]]]))
     else:
         print("ref:", n_ref)
