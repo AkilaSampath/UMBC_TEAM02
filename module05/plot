@@ -1,0 +1,2 @@
+echo "Press 'q' to close out of a plot, and enter to display the next."
+gnuplot plot.gnu
