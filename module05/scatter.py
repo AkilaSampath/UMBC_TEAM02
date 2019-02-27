@@ -156,8 +156,8 @@ if (__name__ == "__main__"):
     tau_c = 3.0
     omega = 0.9
     theta_0 = pi/4
-    #n_total = 10000
-    n_total = 10
+    n_total = 10000
+   # n_total = 10
     return_array = True
     track_max_depth = True
 
