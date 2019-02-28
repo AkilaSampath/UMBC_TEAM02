@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
+np.random.seed() # seed randomizer
+
 w0 = 0.8; # single-scattering albedo
 N = 10000; # number of photons to trace
 ns = 100; # max number of scatters per photon #zeta control
@@ -14,13 +17,12 @@ for i in range(0,N):
  z = 0; # initial position depth
  muz = 0.1; # incident light direction (collimated)
  w = 1; # initial photon weight
- w = 1; # initial photon weight
  theta=(np.pi)/4 #default pi/2
  muz = np.cos(theta); # incident light direction (collimated)
  for j in range(ns):
       zeta=np.random.rand() 
 #    s = 1*(np.log(np.random.rand))/c; # geometric path length
-      s= -1*np.log(1-zeta)/c
+      s= -1*np.log(1-zeta)
 #     s=0.8147
 # print(s)
       z = z + muz*s; # move photon
@@ -29,6 +31,8 @@ for i in range(0,N):
        E+=1; 
        break #count photons leaving out top
       w=w*w0; # absorb fraction of photon packet   
+        
+      zeta = np.random.rand() #Rerandomize zeta
       muz= 2*zeta-1; # isotopic scattering
       if np.any(z>s): 
        Et+=1; #photons transmitted 

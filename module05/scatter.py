@@ -60,6 +60,9 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
     #Debugging
     verbose = False
 
+    #Seed randomizer
+    np.random.seed()
+
     #Main loop
     for i in range(n_total):
         #Set up variables for this photon
