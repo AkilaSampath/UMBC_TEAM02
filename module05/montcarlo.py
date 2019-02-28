@@ -39,10 +39,11 @@ for i in range(0,N):
        break
       if (np.any(z>0) and np.any(z<s)): 
 #         w=w*w0
-         if (zeta>w0):
-           Eabs+=1
-           break
-         if (zeta<=w0):   
+        zeta = np.random.rand() #Rerandomize zeta
+        if (zeta>w0):
+            Eabs+=1
+            break
+        if (zeta<=w0):   
             muz= 2*zeta-1; #scattering angle
  
  #print(muz)
@@ -52,8 +53,8 @@ for i in range(0,N):
 Ref=E/N;
 Abs=Eabs/N;
 Transm=Et/N;
-print(Ref)
-print(Abs)
-print(Transm)
+print("Fraction Reflected:  ", Ref)
+print("Fraction Absorbed:   ", Abs)
+print("Fraction Transmitted:", Transm)
  
-print(muz)
+print("cos(theta) on last iteration:", muz)
