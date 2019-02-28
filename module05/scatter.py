@@ -52,7 +52,7 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
         n_tra = 0
 
     if(track_max_depth):
-        max_depths = [0.0 for i in range(n_total)]
+        max_depths = []
 
     #Non command line vars
     block_size = 1
@@ -69,6 +69,7 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
         tau = 0.0
         theta = theta_0
         absorbed = False
+        max_depth = 0.0
 
         if(verbose):
             print("New photon")
@@ -79,14 +80,14 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
         zeta = np.random.random(block_size)
         L = -log(1 - zeta)
         tau += L*cos(theta)
-        if(track_max_depth and max_depths[i] < tau):
-            max_depths[i] = tau
+        if(track_max_depth and max_depth < tau):
+            max_depth = tau
 
         while(0.0 < tau and tau < tau_c and not absorbed):
 
             #Check for max_depth
-            if(track_max_depth and max_depths[i] < tau):
-                max_depths[i] = tau
+            if(track_max_depth and max_depth < tau):
+                max_depth = tau
 
             #If here, then inside
             zeta = np.random.random(block_size)
@@ -107,9 +108,9 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
                 if(not absorbed):
                     print(tau)
 
-        #Check for max_depth one last time if not absorbed
-        if(track_max_depth and max_depths[i] < tau and not absorbed):
-            max_depths[i] = tau
+        #Check for max_depth one last time if not absorbed 
+        if(track_max_depth and max_depth < tau and not absorbed):
+            max_depth = tau
 
         #Note: due to loop order, there is a final movement regardless of absorption.
         #Thus, absorbed *must* be checked first. Sometimes the photon may be absorbed and
@@ -123,6 +124,8 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
                 n_abs[-1] += 1
             elif(tau <= 0.0):
                 n_ref[-1] += 1
+                if(track_max_depth):
+                    max_depths += [max_depth]
             elif(tau >= tau_c):
                 n_tra[-1] += 1
             else:
@@ -132,6 +135,8 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
                 n_abs += 1
             elif(tau <= 0.0):
                 n_ref += 1
+                if(track_max_depth):
+                    max_depths += [max_depth]
             elif(tau >= tau_c):
                 n_tra += 1
             else:
@@ -164,20 +169,45 @@ if (__name__ == "__main__"):
     return_array = True
     track_max_depth = True
 
-    #Run code
-    A = scatter(tau_c, omega, theta_0, n_total, return_array = return_array, track_max_depth=track_max_depth)
+    ##Run code
+    #A = scatter(tau_c, omega, theta_0, n_total, return_array = return_array, track_max_depth=track_max_depth)
 
-    #Unpack
-    if(not track_max_depth):
-        (n_ref, n_abs, n_tra) = A
-    else:
-        (n_ref, n_abs, n_tra, max_depths) = A
+    ##Unpack
+    #if(not track_max_depth):
+    #    (n_ref, n_abs, n_tra) = A
+    #else:
+    #    (n_ref, n_abs, n_tra, max_depths) = A
 
-    #Friendly output either way
-    if(return_array):
-        for i in range(n_total):
-            print(" ".join([str(s) for s in [i, n_ref[i], n_abs[i], n_tra[i], max_depths[i]]]))
-    else:
-        print("ref:", n_ref)
-        print("abs:", n_abs)
-        print("tra:", n_tra)
+    ##Friendly output either way
+    #if(return_array):
+    #    for i in range(n_total):
+    #        print(" ".join([str(s) for s in [i, n_ref[i], n_abs[i], n_tra[i]]]))
+    #else:
+    #    print("ref:", n_ref)
+    #    print("abs:", n_abs)
+    #    print("tra:", n_tra)
+
+    #if(track_max_depth):
+    #    print("max depth of reflected", max(max_depths))
+
+
+    #Question 1: Relationship of Reflectance to 
+    print(" - - - Question 1 - - - ")
+    #Question 2: Max Depth of Reflected Photons
+    print(" - - - Question 2 - - - ")
+    tau_c = 10.0
+    theta_0 = 0.0
+    n_total = 10000
+    for omega in [1.0, 0.96, 0.92, 0.88]:
+        print("Checking omega =", omega)
+        outputFile = open("question_2_omega_"+str(omega)+".dat", "w")
+        (n_ref, n_abs, n_tra, max_depths) = scatter(tau_c, omega, theta_0, n_total, track_max_depth=True)
+
+        #Write output
+        for depth in max_depths:
+            outputFile.write(str(depth))
+            outputFile.write("\n")
+        outputFile.close()
+        
+    #Question 3:
+    print(" - - - Question 3 - - - ")
