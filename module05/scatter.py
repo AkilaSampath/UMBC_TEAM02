@@ -9,7 +9,7 @@ import itertools
 
 #This program can be run to answer the scientific questions. It accepts one command line argument, n_total
 
-def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=False):
+def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=False, verbose=False):
     """
     This program uses a 1 dimensional Monte-Carlo method to simulate photon scattering 
     through a cloud.
@@ -32,6 +32,11 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
                             the ith entry contains the state after i photons have been processed.
                             this way, information can be obtained about the success of the Monte-
                             Carlo method. 
+
+    track_max_depth (=False), this will return an additional array containing the max depths of,
+                              any photons that were eventually reflected.
+
+    verbose (=False),       This will print extra information
 
     - - - - - - 
 
@@ -63,9 +68,6 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
     #Non command line vars
     block_size = 1
 
-    #Debugging
-    verbose = False
-
     #Seed randomizer
     np.random.seed()
 
@@ -91,11 +93,13 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
 
         while(0.0 < tau and tau < tau_c and not absorbed):
 
+            #If still running, then inside cloud
+
             #Check for max_depth
             if(track_max_depth and max_depth < tau):
                 max_depth = tau
 
-            #If here, then inside
+            #Check for absorption
             zeta = np.random.random(block_size)
             absorbed = (zeta > omega)
         
@@ -179,11 +183,12 @@ if (__name__ == "__main__"):
     print("n_cores is", number_of_cores)
 
     #Question 1: Relationship of Reflectance to tau_c and omega
-    print(" - - - Question 1 using theta_0 of pi/4, n_total =", n_total, "10000 - - - ")
     omega_vals = [1.0, 0.9, 0.8]
     tau_c_vals = [0.1*x for x in range(1, 201)] #For final run use this
-    
     theta_0 = pi/4
+
+    print(" - - - Question 1 using theta_0 of", theta_0, "- - - ")
+    
     reflectanceA = [[0.0 for __ in range(len(tau_c_vals))] for _ in range(len(omega_vals))]
 
     ##Serial Code
@@ -198,8 +203,8 @@ if (__name__ == "__main__"):
     #        reflectance[i][j] = n_ref/n_total
 
     def reflectance_parameters(parameters):
-        tau_c = parameters[0]
-        omega = parameters[1]
+        omega = parameters[0]
+        tau_c = parameters[1]
         theta_0_loc = theta_0
         (n_ref, n_abs, n_tra) = scatter(tau_c, omega, theta_0_loc, n_total)
         return n_ref / n_total
@@ -211,6 +216,7 @@ if (__name__ == "__main__"):
     for i in range(len(omega_vals)):
         for j in range(len(tau_c_vals)):
             reflectanceA[i][j] = temp[len(tau_c_vals)*i + j]
+            #print("w", omega_vals[i], "t", tau_c_vals[j], "R", reflectanceA[i][j])
 
 
     outputFile = open("question_1.dat", "w")
