@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import numpy as np
+import scipy.integrate as spi
 from math import *
+import multiprocessing as mp
 
 def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=False):
     """
@@ -160,44 +162,16 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
 #Testing
 if (__name__ == "__main__"):
 
-    #Parameters
-    tau_c = 3.0
-    omega = 0.9
-    theta_0 = pi/4
-    #n_total = 10000
-    n_total = 10
-    return_array = True
-    track_max_depth = True
 
-    ##Run code
-    #A = scatter(tau_c, omega, theta_0, n_total, return_array = return_array, track_max_depth=track_max_depth)
-
-    ##Unpack
-    #if(not track_max_depth):
-    #    (n_ref, n_abs, n_tra) = A
-    #else:
-    #    (n_ref, n_abs, n_tra, max_depths) = A
-
-    ##Friendly output either way
-    #if(return_array):
-    #    for i in range(n_total):
-    #        print(" ".join([str(s) for s in [i, n_ref[i], n_abs[i], n_tra[i]]]))
-    #else:
-    #    print("ref:", n_ref)
-    #    print("abs:", n_abs)
-    #    print("tra:", n_tra)
-
-    #if(track_max_depth):
-    #    print("max depth of reflected", max(max_depths))
-
+    #The last question has a long runtime, it can be slightly mitigated with this.
+    number_of_cores = 4
 
     #Question 1: Relationship of Reflectance to tau_c and omega
     print(" - - - Question 1 using theta_0 of pi/4, n_total = 1000 - - - ")
     omega_vals = [1.0, 0.9, 0.8]
-    #tau_c_vals = [0.1*x for x in range(1,201)] #For final run use this
-    tau_c_vals = [2.0*x for x in range(1,11)]
+    tau_c_vals = [0.1*x for x in range(1,201)] #For final run use this
     theta_0 = pi/4
-    n_total = 1000
+    n_total = 10000
     reflectance = [[0.0 for _ in range(1,201)] for __ in range(3)]
     for i in range(len(omega_vals)):
         omega = omega_vals[i]
@@ -217,9 +191,7 @@ if (__name__ == "__main__"):
     outputFile.close()
 
 
-
     #Question 2: Max Depth of Reflected Photons
-    print(" - - - Question 2 - - - ")
     tau_c = 10.0
     theta_0 = 0.0
     n_total = 10000
@@ -234,5 +206,52 @@ if (__name__ == "__main__"):
             outputFile.write("\n")
         outputFile.close()
         
-    #Question 3:
+
+    #Question 3: Integration 
     print(" - - - Question 3 - - - ")
+
+    n_total = 10000
+    tau_min = 0.1
+    tau_max = 20.0
+    step_size = 0.1
+
+    #Here we make use of a couple dummy functions so that the full code can be passed to scipy
+    def reflectance(tau_c):
+        omega = 1.0
+        theta_0 = pi/4
+        (n_ref, n_abs, n_tra) = scatter(tau_c, omega, theta_0, n_total)
+        return n_ref / n_total
+
+    def integrand(tau):
+        C_0 = 0.04
+        k = 0.2
+        return reflectance(tau)*C_0*tau*e**(-k*tau)
+
+
+    #Make arrays for trapezoid rule
+    x_val = tau_min
+    x_array = [x_val]
+    i = 1
+    while(x_val <= tau_max):
+        x_val = step_size*i + tau_min
+        i += 1
+        x_array.append(x_val)
+    
+    ##Block below is quite slow, so we make use of Python parallelization libraries
+    #y_array = [0.0 for _ in x_array]
+    #for i in range(len(y_array)):
+    #    print("Working on tau =", x_array[i])
+    #    y_array[i] = integrand(x_array[i]) 
+    #
+
+    #Parallel code
+    p = mp.Pool(processes=number_of_cores)
+    y_array = p.map(integrand, x_array)
+    integral = spi.trapz(y_array, x_array)
+
+    print("Integral is", integral)
+    outputFile = open("question_3.dat", "w")
+    outputFile.write("".join([str(s) for s in ["Integral: ", integral, "\n"]]))
+    outputFile.close()
+    
+
