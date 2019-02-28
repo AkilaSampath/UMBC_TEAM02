@@ -16,7 +16,6 @@ Et=0
 for i in range(0,N):
  z = 0; # initial position depth
  muz = 0.1; # incident light direction (collimated)
- w = 1; # initial photon weight
  theta=(np.pi)/4 #default pi/2
  muz = np.cos(theta); # incident light direction (collimated)
  for j in range(ns):
@@ -30,7 +29,6 @@ for i in range(0,N):
       if (z<0): 
        E+=1; 
        break #count photons leaving out top
-      w=w*w0; # absorb fraction of photon packet   
         
       zeta = np.random.rand() #Rerandomize zeta
       muz= 2*zeta-1; # isotopic scattering
@@ -38,7 +36,6 @@ for i in range(0,N):
        Et+=1; #photons transmitted 
        break
       if (np.any(z>0) and np.any(z<s)): 
-#         w=w*w0
         zeta = np.random.rand() #Rerandomize zeta
         if (zeta>w0):
             Eabs+=1
