@@ -191,8 +191,33 @@ if (__name__ == "__main__"):
     #    print("max depth of reflected", max(max_depths))
 
 
-    #Question 1: Relationship of Reflectance to 
-    print(" - - - Question 1 - - - ")
+    #Question 1: Relationship of Reflectance to tau_c and omega
+    print(" - - - Question 1 using theta_0 of pi/4, n_total = 1000 - - - ")
+    omega_vals = [1.0, 0.9, 0.8]
+    #tau_c_vals = [0.1*x for x in range(1,201)] #For final run use this
+    tau_c_vals = [2.0*x for x in range(1,11)]
+    theta_0 = pi/4
+    n_total = 1000
+    reflectance = [[0.0 for _ in range(1,201)] for __ in range(3)]
+    for i in range(len(omega_vals)):
+        omega = omega_vals[i]
+        for j in range(len(tau_c_vals)):
+            tau_c = tau_c_vals[j]
+            print("Checking omega =", omega, "tau_c =", tau_c)
+            (n_ref, n_abs, n_tra) = scatter(tau_c, omega, theta_0, n_total)
+            reflectance[i][j] = n_ref/n_total
+
+    outputFile = open("question_1.dat", "w")
+    for i in range(len(omega_vals)):
+        outputFile.write("".join([str(s) for s in ["Omega=", str(omega_vals[i]), "\n"]]))
+        for j in range(len(tau_c_vals)):
+            outputFile.write(" ".join([str(s) for s in [tau_c_vals[j], reflectance[i][j], "\n"]]))
+        outputFile.write("\n\n")
+
+    outputFile.close()
+
+
+
     #Question 2: Max Depth of Reflected Photons
     print(" - - - Question 2 - - - ")
     tau_c = 10.0
