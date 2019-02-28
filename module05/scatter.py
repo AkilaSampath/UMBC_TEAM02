@@ -5,6 +5,7 @@ import scipy.integrate as spi
 from math import *
 import multiprocessing as mp
 import sys
+import itertools
 
 #This program can be run to answer the scientific questions. It accepts one command line argument, n_total
 
@@ -164,44 +165,66 @@ def scatter(tau_c, omega, theta_0, n_total, return_array=False, track_max_depth=
 
 #Testing
 if (__name__ == "__main__"):
-
-
-    #The last question has a long runtime, it can be slightly mitigated with this.
+    #Some questions have a long runtime, they can be slightly mitigated with parallelization.
     number_of_cores = 4
-    n_total = 100
+
+    #Accept command line argument
+    n_total = 10000
 
     if(len(sys.argv) > 1):
         n_total = int(sys.argv[1])
+        if(len(sys.argv) > 2):
+            number_of_cores = int(sys.argv[2])
     print("n_total is", n_total)
+    print("n_cores is", number_of_cores)
 
     #Question 1: Relationship of Reflectance to tau_c and omega
     print(" - - - Question 1 using theta_0 of pi/4, n_total =", n_total, "10000 - - - ")
     omega_vals = [1.0, 0.9, 0.8]
-    tau_c_vals = [0.1*x for x in range(1,201)] #For final run use this
+    tau_c_vals = [0.1*x for x in range(1, 201)] #For final run use this
+    
     theta_0 = pi/4
-    reflectance = [[0.0 for _ in range(1,201)] for __ in range(3)]
+    reflectanceA = [[0.0 for __ in range(len(tau_c_vals))] for _ in range(len(omega_vals))]
+
+    ##Serial Code
+    #for i in range(len(omega_vals)):
+    #    omega = omega_vals[i]
+    #    print("Checking omega =", omega)
+    #
+    #    for j in range(len(tau_c_vals)):
+    #        tau_c = tau_c_vals[j]
+    #        print("Checking omega =", omega, "tau_c =", tau_c)
+    #        (n_ref, n_abs, n_tra) = scatter(tau_c, omega, theta_0, n_total)
+    #        reflectance[i][j] = n_ref/n_total
+
+    def reflectance_parameters(parameters):
+        tau_c = parameters[0]
+        omega = parameters[1]
+        theta_0_loc = theta_0
+        (n_ref, n_abs, n_tra) = scatter(tau_c, omega, theta_0_loc, n_total)
+        return n_ref / n_total
+
+    packaged_vals = list(itertools.product(omega_vals, tau_c_vals))
+    p = mp.Pool(processes=number_of_cores)
+    temp = p.map(reflectance_parameters, packaged_vals)
+    ##Unpack
     for i in range(len(omega_vals)):
-        omega = omega_vals[i]
         for j in range(len(tau_c_vals)):
-            tau_c = tau_c_vals[j]
-            print("Checking omega =", omega, "tau_c =", tau_c)
-            (n_ref, n_abs, n_tra) = scatter(tau_c, omega, theta_0, n_total)
-            reflectance[i][j] = n_ref/n_total
+            reflectanceA[i][j] = temp[len(tau_c_vals)*i + j]
+
 
     outputFile = open("question_1.dat", "w")
     for i in range(len(omega_vals)):
         outputFile.write("".join([str(s) for s in ["Omega=", str(omega_vals[i]), "\n"]]))
         for j in range(len(tau_c_vals)):
-            outputFile.write(" ".join([str(s) for s in [tau_c_vals[j], reflectance[i][j], "\n"]]))
+            outputFile.write(" ".join([str(s) for s in [tau_c_vals[j], reflectanceA[i][j], "\n"]]))
         outputFile.write("\n\n")
 
     outputFile.close()
 
-
     #Question 2: Max Depth of Reflected Photons
     tau_c = 10.0
     theta_0 = 0.0
-    n_total = 100
     for omega in [1.0, 0.96, 0.92, 0.88]:
         print("Checking omega =", omega)
         outputFile = open("question_2_omega_"+str(omega)+".dat", "w")
@@ -217,7 +240,6 @@ if (__name__ == "__main__"):
     #Question 3: Integration 
     print(" - - - Question 3 - - - ")
 
-    n_total = 100
     tau_min = 0.1
     tau_max = 20.0
     step_size = 0.1
@@ -252,8 +274,8 @@ if (__name__ == "__main__"):
     #
 
     #Parallel code
-    p = mp.Pool(processes=number_of_cores)
-    y_array = p.map(integrand, x_array)
+    q = mp.Pool(processes=number_of_cores)
+    y_array = q.map(integrand, x_array)
     integral = spi.trapz(y_array, x_array)
 
     print("Integral is", integral)
