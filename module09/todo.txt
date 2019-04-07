@@ -1,4 +1,4 @@
-[X] 1. Copy data
+[-] 1. Copy data: Each will need to do this: use copydata.exe
 [ ] 2. Write Spark program (see a)
 [ ]   a. Use Spark MLlib Dataframe approach, instead of RDD
 [ ]     1. Download sample K-Means clustering code
