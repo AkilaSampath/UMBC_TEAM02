@@ -1,0 +1,15 @@
+[X] 1. Copy data
+[ ] 2. Write Spark program (see a)
+[ ]   a. Use Spark MLlib Dataframe approach, instead of RDD
+[ ]     1. Download sample K-Means clustering code
+[ ]     2.
+[ ]   b. Auxiliary processing
+[ ]   c. Run clustering with K = 5, 10, 15
+[ ]   d. For each K, run the code on 1, 2, 4 nodes, recording exec time
+
+[ ] 3. Post Processing
+[ ]   a. Python Script
+[ ]     1, 2. Copy script
+[ ]     3. Run the script
+[ ]   b. Put plots in final submission 
+        
