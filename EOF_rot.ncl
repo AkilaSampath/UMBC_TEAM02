@@ -78,7 +78,7 @@ printVarSummary(sst1)
 ; weight all observations 
 ; =================================================================
   wvar   = VAR                                   ; copy meta data
-  wvar   = VAR*conform(sst1, clat, 1)
+  wvar   = VAR*conform(sst1, clat, 1)            ; maybe a typo here: VAR is raw data; it should be sst1 (MW)
   wvar@long_name = "Wgt: "+wvar@long_name
 
 ; =================================================================
@@ -96,12 +96,12 @@ printVarSummary(x1)
 ;x1=x1- Kelvin  ;;;;"deg C"
 ;x1=x1*100  ;;;;"deg C"
   eof    = eofunc_Wrap(x1, neof, optEOF)      
-  eof_ts = eofunc_ts_Wrap (x1, eof, optETS)
+  eof_ts = eofunc_ts_Wrap (x1, eof, optETS)      ; maybe a typo again: eof if unrotated eof; it should be eof_rot (MW)
 ; =================================================================
 ; Perform varimax rotation
 ; =================================================================
 
-eof_rot = eofunc_varimax_Wrap( eof, 1 )
+eof_rot = eofunc_varimax_Wrap( eof, 1 )          ; there can be a minor improvement using the option -1 (MW)
   eofrot_ts = eofunc_ts_Wrap (x1, eof_rot, optETS)
 printVarSummary( eof_rot )        
 print("eof_rot: min="+min(eof_rot)+"   max="+max(eof_rot) )
